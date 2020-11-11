@@ -1,5 +1,6 @@
 package net.util.manager
 
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import net.util.manager.config.AppOpts
 import net.util.manager.config.ClientOpts
 import net.util.manager.config.MyTrustManager
@@ -9,7 +10,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.io.File
 import java.util.concurrent.TimeUnit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 import java.security.KeyStore
@@ -21,7 +21,6 @@ import javax.net.ssl.*
 class HttpManager {
     private val SERVICE_MAP = HashMap<String,Any>()
     private val fastJsonConverterFactory = GsonConverterFactory.create()
-    private val rxJavaCallAdapterFactory = RxJava2CallAdapterFactory.create()
     var sslCertPath: Array<String>? = null
     @Synchronized
     fun <T> getService( serviceClass: Class<T>,
@@ -91,7 +90,7 @@ class HttpManager {
             .client(mApiClient)
             .baseUrl(baseUrl)
             .addConverterFactory(fastJsonConverterFactory)
-            .addCallAdapterFactory(rxJavaCallAdapterFactory)
+            .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .build()
     }
 

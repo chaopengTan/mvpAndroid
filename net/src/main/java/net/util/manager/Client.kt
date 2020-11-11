@@ -1,5 +1,6 @@
 package net.util.manager
 
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import net.util.manager.config.AppOpts
 import net.util.manager.config.MyTrustManager
 import retrofit2.Retrofit
@@ -9,7 +10,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.converter.gson.GsonConverterFactory
 import net.util.manager.config.ParameterInterceptor
 import okhttp3.Cache
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import java.io.File
 import java.security.SecureRandom
 import javax.net.ssl.*
@@ -38,7 +38,7 @@ class Client :ICreateRetrofitClient{
             .client(mApiClient)
             .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .build()
     }
 
@@ -58,7 +58,7 @@ class Client :ICreateRetrofitClient{
     }
 
 
-    fun getHostnameVerifier(): HostnameVerifier {
+    private fun getHostnameVerifier(): HostnameVerifier {
         return HostnameVerifier { _, _ -> true }
     }
 }
