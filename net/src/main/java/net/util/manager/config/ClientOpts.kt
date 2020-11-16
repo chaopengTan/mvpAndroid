@@ -9,5 +9,6 @@ abstract class ClientOpts {
         fun initParameter(parameter:Map<String,String>){
             this.parameter = parameter
         }
+        var URL_GITHUB:String =""
     }
 }

@@ -1,4 +1,4 @@
-package net.util.manager
+package com.base.mvp
 
 import org.junit.Test
 

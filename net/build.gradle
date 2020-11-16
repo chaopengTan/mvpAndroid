@@ -3,11 +3,13 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.chaopengTan'
+apply plugin: 'maven-publish'
+apply from: '../maven-common.gradle'
+
+
 android {
     compileSdkVersion 29
     buildToolsVersion "30.0.1"
-
-
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 29
@@ -36,4 +38,52 @@ dependencies {
     api rootProject.ext.dependencies["coroutinesAdapter"]
     api rootProject.ext.dependencies["retrofit"]
     api rootProject.ext.dependencies["logging-interceptor"]
+}
+
+//publishing {
+//    publications {
+//        mavenJava(MavenPublication) {
+//            groupId 'com.github.chaopengTan'
+//            artifactId 'mvpAndroid'
+//            version 'v1.0.0'
+//        }
+//    }
+//    repositories {
+//        mavenLocal()
+//    }
+//}
+
+
+//在项目根目录下执行命令 `./gradlew :jlibwithsource:clean :jlibwithsource:publish`, 来发布当前jar包
+//使用这个配置发布的包包括: 源码打成的jar包和class文件打成的jar包
+apply plugin: "maven-publish"
+//重新已有的task (用于打包源文件, 用于定义某个`publication`中的源文件包, 如下面的: `artifact sourceJar`)
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier "sources" //定义一个标志 (生成的jar包后面加上sources, 如: jlib-2.2.11-sources.jar)
+}
+
+publishing {
+    publications {
+        aar(MavenPublication) {
+            //定义源码task
+            artifact sourceJar
+            //定义包的坐标:
+            groupId 'com.stone.jlibwithsource.jlib'
+            artifactId 'jlib'
+            version '2.2.11'
+        }
+    }
+
+
+    //定义目标仓库 (包所存放的地方)
+    repositories {
+        //发布到自定义的目录
+//        maven {
+//            url '../repo' //本地仓库 (包存放在项目更目录下的repo目录)
+//        }
+
+        //发布到本地maven仓库 (~/.m2/repository)
+        mavenLocal()
+    }
 }

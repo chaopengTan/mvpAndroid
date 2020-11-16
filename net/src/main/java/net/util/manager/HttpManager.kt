@@ -22,8 +22,8 @@ class HttpManager {
     private val SERVICE_MAP = HashMap<String,Any>()
     private val fastJsonConverterFactory = GsonConverterFactory.create()
     var sslCertPath: Array<String>? = null
-    @Synchronized
-    fun <T> getService( serviceClass: Class<T>,
+
+    companion object fun <T> getService( serviceClass: Class<T>,
                         baseUrl: String,
                         createRetrofitClientClass: Class<out ICreateRetrofitClient>?): T {
         if (createRetrofitClientClass == null) {
@@ -49,7 +49,7 @@ class HttpManager {
 
 
     @Synchronized
-    fun <T> getService(serviceClass: Class<T>, baseUrl: String): T {
+    private fun <T> getService(serviceClass: Class<T>, baseUrl: String): T {
         //缓存
         if (SERVICE_MAP.containsKey(serviceClass.name)) {
             return SERVICE_MAP[serviceClass.name] as T

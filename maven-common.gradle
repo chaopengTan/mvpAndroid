@@ -1,0 +1,61 @@
+apply plugin: 'maven-publish'
+
+def getMavenUrl() {
+    if (isSnapShot()) {
+        return project.properties.get("snapUrl")
+    } else {
+        return project.properties.get("mavenUrl")
+    }
+}
+
+def getMavenUserName() {
+    return project.properties.get("mavenUserName")
+}
+
+def getMavenUserPwd() {
+    return project.properties.get("mavenUserPwd")
+}
+
+def isSnapShot() {
+    return project.properties.containsKey("snapShot") &&
+            project.properties.get("snapShot").toBoolean()
+}
+
+// 获取系统时间
+def static releaseTime() {
+    return new Date().format("yyyyMMdd.HHmm", TimeZone.getTimeZone("GMT+08"))
+}
+
+def getVersionNameStr() {
+//    return "${android.defaultConfig.versionName}"
+    return "1.0.0"
+}
+
+def getTimeStr() {
+    return new Date().format('yyyyMMddHHmmss')
+}
+
+
+publishing {
+    repositories {
+        maven {
+            url getMavenUrl()
+            credentials {
+                username getMavenUserName()
+                password getMavenUserPwd()
+
+            }
+        }
+    }
+    publications {
+        sdk(MavenPublication) {
+            def versionStr = getVersionNameStr()
+            if (isSnapShot()) {
+                versionStr = "${versionStr}.${getTimeStr()}"
+            }
+            groupId "groupId"
+            artifactId "$project.name"
+            version versionStr
+        }
+    }
+}
