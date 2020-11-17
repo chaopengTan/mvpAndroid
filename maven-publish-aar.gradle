@@ -1,0 +1,62 @@
+task sourceJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+apply plugin: 'maven-publish'
+
+publishing {
+    publications {
+        aar(MavenPublication) {
+            artifactId = project.name
+            //artifact sourceJar
+            artifact("$buildDir/outputs/aar/${project.name}-release.aar")
+
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+
+                ext.addDependency = {Dependency dep, String scope ->
+                    if (dep.group == null || dep.version == null
+                            || dep.name == null || "unspecified" == dep.name)
+                        return
+                    def dependency = dependenciesNode.appendNode('dependency')
+                    dependency.appendNode('groupId', dep.group)
+                    dependency.appendNode('artifactId', dep.name)
+                    dependency.appendNode('version', dep.version)
+                    dependency.appendNode('scope', scope)
+                    if (!dep.transitive) {
+                        final exclusion = dependency.appendNode('exclusions').appendNode('exclusion')
+                        exclusion.appendNode('groupId', '*')
+                        exclusion.appendNode('artifactId', '*')
+                    } else if (!dep.properties.excludeRules.empty) {
+                        final exclusion = dependency.appendNode('exclusions').appendNode('exclusion')
+                        dep.properties.excludeRules.each { ExcludeRule rule ->
+                            exclusion.appendNode('groupId', rule.group ?: '*')
+                            exclusion.appendNode('artifactId', rule.module ?: '*')
+                        }
+                    }
+                }
+
+                configurations.compile.getDependencies().each { dep -> addDependency(dep, "compile") }
+                configurations.api.getDependencies().each { dep -> addDependency(dep, "compile") }
+                configurations.implementation.getDependencies().each { dep -> addDependency(dep, "runtime") }
+            }
+        }
+    }
+    repositories {
+        maven {
+            url = version.endsWith("SNAPSHOT") ? MAVEN_REPO_SNAPSHOTS_URL : MAVEN_REPO_RELEASES_URL
+            credentials {
+                username MAVEN_REPO_USERNAME
+                password MAVEN_REPO_PASSWORD
+            }
+        }
+    }
+}
+
+tasks.withType(PublishToMavenLocal).each {
+    task -> task.dependsOn('assembleRelease')
+}
+tasks.withType(PublishToMavenRepository).each {
+    task -> task.dependsOn('assembleRelease', tasks.withType(PublishToMavenLocal))
+}

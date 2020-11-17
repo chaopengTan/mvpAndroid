@@ -17,20 +17,19 @@ import java.security.SecureRandom
 import java.security.cert.CertificateFactory
 import javax.net.ssl.*
 
-
-class HttpManager {
+ object  HttpManager {
     private val SERVICE_MAP = HashMap<String,Any>()
     private val fastJsonConverterFactory = GsonConverterFactory.create()
     var sslCertPath: Array<String>? = null
 
-    companion object fun <T> getService( serviceClass: Class<T>,
+     fun <T> getService( serviceClass: Class<T>,
                         baseUrl: String,
                         createRetrofitClientClass: Class<out ICreateRetrofitClient>?): T {
         if (createRetrofitClientClass == null) {
             return getService(serviceClass, baseUrl)
         }
         return if (SERVICE_MAP.containsKey(serviceClass.name)) {
-            SERVICE_MAP.get(serviceClass.name) as T
+            SERVICE_MAP[serviceClass.name] as T
         } else {
             try {
                 val iCreateRetrofitClient = createRetrofitClientClass.newInstance()

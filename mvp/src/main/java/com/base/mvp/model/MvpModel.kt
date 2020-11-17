@@ -5,13 +5,15 @@ import okhttp3.RequestBody
 import com.google.gson.Gson
 import okhttp3.MediaType
 import android.text.TextUtils
+import net.util.manage.api.IApiServerAbs
+import net.util.manager.Client
+import net.util.manager.HttpManager
+import net.util.manager.config.ClientOpts
+import java.util.*
+import kotlin.collections.HashMap
 
 
-class MvpModel<T> : IGlobalRepo<T>{
-    override fun getHttpService(): T {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
+abstract class MvpModel : IGlobalRepo{
     override fun createRequestMap(obj: RequestModelBean): Map<String, String> {
         val map = HashMap<String,String>()
         val clazz = obj.javaClass
@@ -40,13 +42,14 @@ class MvpModel<T> : IGlobalRepo<T>{
         return RequestBody.create(MediaType.parse("application/json"), Gson().toJson(request))
     }
 
-//    override fun getHttpService(): T {
-////        return HttpManager.getService(
-////            IApiServer::class.java!!,
-////            ClientOpts.URL_GITHUB,
-////            Client::class.java
-////        )
-//    }
-
-
+    override fun getHttpService(): Any? {
+        val serviceLoader = ServiceLoader.load(IApiServerAbs::class.java)
+        val it = serviceLoader.iterator()
+        val tClass =  it.next().getServer()
+        return HttpManager.getService(
+            tClass,
+            ClientOpts.URL_GITHUB,
+            Client::class.java
+        )
+    }
 }
