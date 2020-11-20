@@ -13,20 +13,25 @@ import android.widget.ImageView
 import com.base.mvp.view.manager.StateLayoutManager
 
 class StateFrameLayout(context: Context) : FrameLayout(context) {
-    /**
-     * 内容id
-     */
-    val LAYOUT_CONTENT_ID = 2
 
-    /**
-     * 网络异常id
-     */
-    val LAYOUT_NETWORK_ERROR_ID = 4
+    companion object{
+        /**
+         * 内容id
+         */
+        val LAYOUT_CONTENT_ID = 2
 
-    /**
-     * 空数据id
-     */
-    val LAYOUT_EMPTY_DATA_ID = 5
+        /**
+         * 网络异常id
+         */
+        val LAYOUT_NETWORK_ERROR_ID = 4
+
+        /**
+         * 空数据id
+         */
+        val LAYOUT_EMPTY_DATA_ID = 5
+    }
+
+
 
     private val layoutSparseArray = SparseArray<View>()
     /**
@@ -55,6 +60,11 @@ class StateFrameLayout(context: Context) : FrameLayout(context) {
      * 添加所有不同状态布局到帧布局中
      */
     private fun addAllLayoutToRootLayout() {
+        //这个就是我们子类对应的xml布局.
+        if (mStatusLayoutManager!!.contentLayoutResId != 0) {
+            addLayoutResId(mStatusLayoutManager!!.contentLayoutResId, StateFrameLayout.LAYOUT_CONTENT_ID)
+        }
+
         //空数据布局
         if (mStatusLayoutManager!!.emptyDataVs != null) {
             addView(mStatusLayoutManager!!.emptyDataVs)
@@ -160,17 +170,11 @@ class StateFrameLayout(context: Context) : FrameLayout(context) {
             //显示该view
             if (key == id) {
                 //显示该视图
-                valueView.setVisibility(View.VISIBLE)
-                if (mStatusLayoutManager!!.onShowHideViewListener != null) {
-                    mStatusLayoutManager!!.onShowHideViewListener.onShowView(valueView, key)
-                }
+                valueView.visibility = View.VISIBLE
             } else {
                 //隐藏该视图
-                if (valueView.getVisibility() !== View.GONE) {
-                    valueView.setVisibility(View.GONE)
-                    if (mStatusLayoutManager!!.onShowHideViewListener != null) {
-                        mStatusLayoutManager!!.onShowHideViewListener.onHideView(valueView, key)
-                    }
+                if (valueView.visibility !== View.GONE) {
+                    valueView.visibility = View.GONE
                 }
             }
         }
@@ -196,7 +200,7 @@ class StateFrameLayout(context: Context) : FrameLayout(context) {
             //网络异常
             LAYOUT_NETWORK_ERROR_ID -> if (mStatusLayoutManager!!.netWorkErrorVs != null) {
                 val view = mStatusLayoutManager!!.netWorkErrorVs!!.inflate()
-                view.setOnClickListener { mStatusLayoutManager!!.onNetworkListener.onNetwork() }
+                view.setOnClickListener { mStatusLayoutManager!!.onNetworkListener!!.onNetwork() }
                 layoutSparseArray.put(id, view)
                 isShow = true
             } else {
@@ -207,9 +211,9 @@ class StateFrameLayout(context: Context) : FrameLayout(context) {
             LAYOUT_EMPTY_DATA_ID -> if (mStatusLayoutManager!!.emptyDataVs != null) {
                 val view = mStatusLayoutManager!!.emptyDataVs!!.inflate()
                 if (mStatusLayoutManager!!.emptyDataLayout != null) {
-                    mStatusLayoutManager!!.emptyDataLayout.setView(view)
+                    mStatusLayoutManager!!.emptyDataLayout!!.setView(view)
                 }
-                view.setOnClickListener { mStatusLayoutManager!!.onRetryListener.onRetry() }
+                view.setOnClickListener { mStatusLayoutManager!!.onRetryListener!!.onRetry() }
                 layoutSparseArray.put(id, view)
                 isShow = true
             } else {

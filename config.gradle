@@ -13,5 +13,7 @@ ext {
             "retrofitConverter"            : "com.squareup.retrofit2:converter-gson:2.3.0",
             "retrofit"                     : "com.squareup.retrofit2:retrofit:2.9.0",
             "logging-interceptor"          : "com.squareup.okhttp3:logging-interceptor:3.8.1",
+            "eventbus"                     : "org.greenrobot:eventbus:3.0.0",
+            "lombok": "org.projectlombok:lombok:1.18.8",
     ]
 }

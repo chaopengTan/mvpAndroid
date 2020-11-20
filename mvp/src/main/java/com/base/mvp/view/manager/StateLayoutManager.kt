@@ -5,11 +5,12 @@ import android.view.View
 import androidx.annotation.LayoutRes
 import android.view.ViewStub
 import android.view.ViewGroup
+import com.base.mvp.view.AbsViewStubLayout
 import com.base.mvp.view.StateFrameLayout
 
 
 
-class StateLayoutManager {
+class StateLayoutManager constructor(builder: Builder){
 
     var context: Context? = null
     var netWorkErrorVs: ViewStub? = null
@@ -25,18 +26,19 @@ class StateLayoutManager {
     var emptyDataTextTipId: Int = 0
     var errorIconImageId: Int = 0
     var errorTextTipId: Int = 0
-    var emptyDataLayout: AbsViewStubLayout?
+    var emptyDataLayout: AbsViewStubLayout? = null
 
-    var rootFrameLayout: StateFrameLayout
-    var onShowHideViewListener: OnShowHideViewListener?
-    var onRetryListener: OnRetryListener?
-    var onNetworkListener: OnNetworkListener?
+    lateinit var rootFrameLayout: StateFrameLayout
+    var onRetryListener: OnRetryListener? = null
+    var onNetworkListener: OnNetworkListener? = null
 
-    fun newBuilder(context: Context): Builder {
-        return Builder(context)
+    companion object{
+        fun newBuilder(context: Context): Builder {
+            return Builder(context)
+        }
     }
 
-    private fun StateLayoutManager(builder: Builder){
+    init {
         this.context = builder.context
         this.loadingLayoutResId = builder.loadingLayoutResId
         this.netWorkErrorVs = builder.netWorkErrorVs
@@ -46,7 +48,6 @@ class StateLayoutManager {
         this.errorVs = builder.errorVs
         this.errorRetryViewId = builder.errorRetryViewId
         this.contentLayoutResId = builder.contentLayoutResId
-        this.onShowHideViewListener = builder.onShowHideViewListener
         this.retryViewId = builder.retryViewId
         this.onRetryListener = builder.onRetryListener
         this.onNetworkListener = builder.onNetworkListener
@@ -57,7 +58,7 @@ class StateLayoutManager {
         this.emptyDataLayout = builder.emptyDataLayout
 
         //创建帧布局
-        rootFrameLayout = StateFrameLayout(this.context)
+        rootFrameLayout = StateFrameLayout(this.context!!)
         val layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
         )
@@ -66,7 +67,6 @@ class StateLayoutManager {
         //设置状态管理器
         rootFrameLayout.setStatusLayoutManager(this)
     }
-
 
     /**
      * 显示内容
@@ -127,7 +127,6 @@ class StateLayoutManager {
          var errorIconImageId: Int = 0
          var errorTextTipId: Int = 0
          var emptyDataLayout: AbsViewStubLayout? = null
-         var onShowHideViewListener: OnShowHideViewListener? = null
          var onRetryListener: OnRetryListener? = null
          var onNetworkListener: OnNetworkListener? = null
 
@@ -227,15 +226,6 @@ class StateLayoutManager {
             return this
         }
 
-        /**
-         * 为状态View显示隐藏监听事件
-         * @param listener                  listener
-         * @return
-         */
-        fun onShowHideViewListener(listener: OnShowHideViewListener): Builder {
-            this.onShowHideViewListener = listener
-            return this
-        }
 
         /**
          * 为重试加载按钮的监听事件
@@ -263,7 +253,7 @@ class StateLayoutManager {
          * @return
          */
         fun build(): StateLayoutManager {
-            return StateLayoutManager()
+            return StateLayoutManager(this)
         }
     }
 

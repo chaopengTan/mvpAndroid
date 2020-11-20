@@ -23,25 +23,24 @@ import javax.net.ssl.*
     var sslCertPath: Array<String>? = null
 
      fun <T> getService( serviceClass: Class<T>,
-                        baseUrl: String,
                         createRetrofitClientClass: Class<out ICreateRetrofitClient>?): T {
         if (createRetrofitClientClass == null) {
-            return getService(serviceClass, baseUrl)
+            return getService(serviceClass, ClientOpts.URL_GITHUB)
         }
         return if (SERVICE_MAP.containsKey(serviceClass.name)) {
             SERVICE_MAP[serviceClass.name] as T
         } else {
             try {
                 val iCreateRetrofitClient = createRetrofitClientClass.newInstance()
-                val obj = iCreateRetrofitClient.createClient(baseUrl).create(serviceClass)
+                val obj = iCreateRetrofitClient.createClient(ClientOpts.URL_GITHUB).create(serviceClass)
                 SERVICE_MAP.put(serviceClass.name, obj!!)
                 obj as T
             } catch (e: InstantiationException) {
                 e.printStackTrace()
-                getService(serviceClass, baseUrl)
+                getService(serviceClass, ClientOpts.URL_GITHUB)
             } catch (e: IllegalAccessException) {
                 e.printStackTrace()
-                getService(serviceClass, baseUrl)
+                getService(serviceClass, ClientOpts.URL_GITHUB)
             }
         }
     }

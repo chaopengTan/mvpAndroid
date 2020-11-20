@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">mvp</string>
+    <string name="text_intent_null_error">intent 不能为Null</string>
 </resources>
