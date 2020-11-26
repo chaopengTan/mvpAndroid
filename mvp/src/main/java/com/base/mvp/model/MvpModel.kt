@@ -5,6 +5,7 @@ import okhttp3.RequestBody
 import com.google.gson.Gson
 import okhttp3.MediaType
 import android.text.TextUtils
+import android.util.Log
 import com.base.mvp.transit.IApiServerAbs
 import net.util.manager.Client
 import net.util.manager.HttpManager
@@ -43,17 +44,11 @@ abstract class MvpModel<T> : IGlobalRepo{
     }
 
     override fun getHttpService(): T {
-        val serviceLoader = ServiceLoader.load(IApiServerAbs::class.java)
-        val it = serviceLoader.iterator()
-        if(!it.hasNext()){
+        val bookList = ServiceLoader.load(IApiServerAbs::class.java, javaClass.classLoader).toList()
+        if(bookList.isEmpty()){
             throw TimeoutException("it is Null")
         }
-
-        var sl = it.next()
-        if(sl==null){
-            throw TimeoutException("sl is Null")
-        }
-        val tClass = sl.getServer()
+        val tClass = bookList[0].getServer()
         return HttpManager.getService(
             tClass,
             Client::class.java

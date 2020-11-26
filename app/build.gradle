@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 29
@@ -17,9 +18,21 @@ android {
         javaCompileOptions { annotationProcessorOptions { includeCompileClasspath = true } }
 
     }
+
+
     buildTypes {
+//        release {
+//            minifyEnabled false
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//        }
+
         release {
-            minifyEnabled false
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -44,4 +57,8 @@ dependencies {
     annotationProcessor rootProject.ext.dependencies["lombok"]
 //    annotationProcessor 'com.google.auto.service:auto-service:1.0-rc4'
 //    compileOnly 'com.google.auto.service:auto-service:1.0-rc4'
+
+    api 'com.google.auto.service:auto-service:1.0-rc7'
+    kapt 'com.google.auto.service:auto-service:1.0-rc7'
+    annotationProcessor  'com.google.auto.service:auto-service:1.0-rc7'
 }

@@ -1,1 +1,1 @@
-include ':app', ':net', ':mvp'
+include ':app', ':mvp'//, ':net',
